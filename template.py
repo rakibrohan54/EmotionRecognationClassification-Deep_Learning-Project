@@ -26,7 +26,7 @@ list_of_files = [
     f"src/{project_name}/pipeline/stage_03_model_training.py",
     f"src/{project_name}/pipeline/stage_04_model_evaluation.py",
     f"src/{project_name}/entity/__init__.py",
-    f"src/{project_name}/entity/entity_config",
+    f"src/{project_name}/entity/config_entity",
     f"src/{project_name}/constants/__init__.py",
     "config/config.yaml",
     "dvc.yaml",
