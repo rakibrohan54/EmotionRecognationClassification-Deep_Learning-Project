@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Potato Disease Prediction</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #ffecb3, #ffe0b2);
+            color: #333;
+            text-align: center;
+            padding: 50px;
+            margin: 0;
+            animation: fadeIn 1s;
+        }
+
+        h1 {
+            color: #d32f2f;
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            color: #333;
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        #image-preview {
+            width: 300px;
+            height: 300px;
+            border: 3px dashed #d32f2f;
+            border-radius: 10px;
+            margin: 20px auto;
+            display: none;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        #image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.3s;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        label {
+            background-color: #d32f2f;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            display: inline-block;
+            margin: 10px;
+            font-size: 16px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        label:hover {
+            background-color: #c62828;
+            transform: translateY(-2px);
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 15px 30px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            font-size: 18px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover {
+            background-color: #1565c0;
+            transform: translateY(-2px);
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            animation: fadeIn 0.5s;
+        }
+
+        footer {
+            margin-top: 200px;
+            color: #555;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .social-links a {
+            color: #1976d2;
+            text-decoration: none;
+            margin: 0 10px;
+            padding: 10px;
+            border: 1px solid #1976d2;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .social-links a:hover {
+            background-color: #1976d2;
+            color: white;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        #loading {
+            display: none;
+            font-size: 20px;
+            color: #d32f2f;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 36px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            button, label {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .result {
+                font-size: 24px;
+                padding: 15px;
+            }
+        }
+
+        /* Updated styles for circular image */
+        .profile-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #d32f2f;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: absolute; /* Positioning the image absolutely */
+            left: 50%; /* Center horizontally */
+            transform: translateX(-50%); /* Center the image */
+            top: -110px; /* Increased top space above the image */
+            margin-bottom: 10px; /* Smaller space below the image */
+            z-index: 3; /* Ensure the image is above other elements */
+            background-color: white; /* Optional: White background for the image */
+        }
+
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Potato Plant Disease Prediction</h1>
+        <h2>Upload a Leaves Image for Analysis</h2>
+
+        <div id="image-preview">
+            <img id="preview" src="#" alt="Image Preview" />
+        </div>
+
+        <input type="file" id="fileInput" accept="image/*" onchange="previewImage(event)">
+        <label for="fileInput"><i class="fas fa-upload"></i> Choose an Image</label>
+        
+        <button id="predictButton" onclick="predict()">Predict</button>
+        
+        <div id="loading">Loading...</div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <!-- Circular profile image positioned just above the footer -->
+    <footer>
+        <div class="profile-image">
+            <img src="https://avatars.githubusercontent.com/u/71736510?v=4" alt="Author Profile">
+        </div>
+        <p>Authored by: <strong>MD. RAKIBUL ISLAM</strong></p>
+        <div class="social-links">
+            <a href="https://github.com/rakibrohan54" target="_blank">GitHub</a>
+            <a href="https://www.linkedin.com/in/rakibrohan54/" target="_blank">LinkedIn</a>
+            <a href="https://www.kaggle.com/rakibrohan12" target="_blank">Kaggle</a>
+            <a href="https://x.com/rakibrohan54" target="_blank">Twitter</a>
+        </div>
+        <p>&copy; 2024 rakibrohan54. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function previewImage(event) {
+            const preview = document.getElementById('preview');
+            const imagePreview = document.getElementById('image-preview');
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function() {
+                preview.src = reader.result;
+                imagePreview.style.display = 'block'; // Show the image preview
+            };
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function predict() {
+            const fileInput = document.getElementById('fileInput');
+            const resultDiv = document.getElementById('result');
+            const loadingIndicator = document.getElementById('loading');
+
+            if (fileInput.files.length === 0) {
+                resultDiv.innerText = 'Please upload an image.';
+                return;
+            }
+
+            const imageFile = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onloadend = async function() {
+                const base64Image = reader.result.split(',')[1];
+                loadingIndicator.style.display = 'block'; // Show loading indicator
+
+                try {
+                    const response = await fetch('/predict', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ image: base64Image }),
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        resultDiv.innerText = 'Prediction: ' + data[0].image;
+                    } else {
+                        const errorData = await response.json();
+                        resultDiv.innerText = 'Error: ' + (errorData.error || 'An error occurred.');
+                    }
+                } catch (error) {
+                    resultDiv.innerText = 'Error occurred while predicting: ' + error.message;
+                } finally {
+                    loadingIndicator.style.display = 'none'; // Hide loading indicator
+                }
+            };
+
+            reader.readAsDataURL(imageFile);
+        }
+    </script>
+
+</body>
+</html>
