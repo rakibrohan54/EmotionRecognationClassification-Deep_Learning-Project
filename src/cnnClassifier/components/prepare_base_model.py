@@ -46,10 +46,6 @@ class PrepareBaseModel:
         # Output layer
         model.add(tf.keras.layers.Dense(classes, activation='softmax'))
 
-        # Print the model summary
-        model.summary()
-        return model
-
     def update_base_model(self):
         """Update the base model to a full model (same as base in this case)."""
         # No need to prepare or update the full model separately; it's already ready.
